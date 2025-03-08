@@ -1,21 +1,32 @@
 package main
 
 import (
-	"log/slog"
+	"os"
+	"os/signal"
+	"sso/internal/app"
 	"sso/internal/config"
 	"sso/internal/lib/logger"
+	"syscall"
 )
 
 func main() {
 	cfg := config.MustLoad()
 
 	log := logger.SetupLogger(cfg.Env)
-	log.Info("starting logger", slog.Any("config", cfg))
 
-	// TODO: инициализация приложения
+	application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
 
-	// TODO: инициализация приложения
+	go func() {
+		application.GRPCServer.MustRun()
+	}()
 
-	// TODO: инициализация grpc
+	// Graceful shutdown
 
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+
+	<-stop
+
+	application.GRPCServer.Stop()
+	log.Info("Gracefully stopped")
 }
