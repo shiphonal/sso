@@ -3,7 +3,6 @@ module sso
 go 1.24
 
 require (
-	github.com/GolangLessons/protos v0.1.2
 	github.com/fatih/color v1.18.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/golang-migrate/migrate/v4 v4.18.2
